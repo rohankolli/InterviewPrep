@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to InterviewPrep</h1>
+    <p class="lead">Your go-to platform for interview preparation. Connect with others and share your experiences.</p>
+    <hr class="my-4">
+    <p>Sign up or log in to get started.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}" role="button">Sign Up</a>
+    <a class="btn btn-secondary btn-lg" href="{{ url_for('login') }}" role="button">Log In</a>
+</div>
+{% endblock %}
