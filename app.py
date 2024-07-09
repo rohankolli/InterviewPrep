@@ -100,6 +100,23 @@ def profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('profile.html', user=user)
 
+@app.route('/userprofile/<int:user_id>')
+def userprofile(user_id):
+    user = User.query.get_or_404(user_id)
+    profile_data = {
+        'name': user.username,
+        'title': 'Security Lead',  # Example title
+        'tasks': [
+            'Product Infrastructure',
+            'Network Security',
+            'Security Testing',
+            'Security Audit Outsourcing',
+            'Bugs'
+        ],
+        'profile_image_url': 'https://via.placeholder.com/100'  # Replace with actual image URL
+    }
+    return render_template('userprofile.html', profile=profile_data)
+
 @app.route('/delete_post/<int:post_id>')
 def delete_post(post_id):
     if 'user_id' not in session:
@@ -117,6 +134,7 @@ def logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
+# Ensure the Flask app runs only when executed directly
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
