@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterviewPrep Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            width: 80%;
+            max-width: 800px;
+            margin-top: 50px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #role-select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        #chatbox {
+            width: 100%;
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+        .bot-message {
+            background-color: #28a745;
+            color: white;
+            align-self: flex-start;
+        }
+        #message-input {
+            width: calc(100% - 110px);
+            padding: 10px;
+            margin-right: 10px;
+        }
+        #send-button, #exit-button {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        #exit-button {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <select id="role-select">
+            <option value="">Select Role</option>
+            <option value="Investment Banking">Investment Banking</option>
+            <option value="Management Consulting">Management Consulting</option>
+            <option value="Software Engineering">Software Engineering</option>
+            <option value="Research Roles">Research Roles</option>
+            <!-- Add more roles as needed -->
+        </select>
+        <div id="chatbox"></div>
+        <input type="text" id="message-input" placeholder="Type your message here...">
+        <button id="send-button">Send</button>
+        <button id="exit-button">Exit</button>
+    </div>
+
+    <script>
+        document.getElementById('send-button').addEventListener('click', sendMessage);
+        document.getElementById('exit-button').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+
+        function sendMessage() {
+            const role = document.getElementById('role-select').value;
+            const userMessage = document.getElementById('message-input').value;
+
+            if (!role) {
+                alert("Please select a role");
+                return;
+            }
+
+            if (!userMessage) {
+                alert("Please enter a message");
+                return;
+            }
+
+            addMessageToChatbox("User: " + userMessage, 'user-message');
+
+            const rolePrompts = {
+                "Investment Banking": "You are an interviewer for an Investment Banking position. Ask me questions relevant to this role.",
+                "Management Consulting": "You are an interviewer for a Management Consulting position. Ask me questions relevant to this role.",
+                "Software Engineering": "You are an interviewer for a Software Engineering position. Ask me questions relevant to this role.",
+                "Research Roles": "You are an interviewer for a Research role. Ask me questions relevant to this role."
+                // Add more prompts for other roles as needed
+            };
+
+            const prompt = rolePrompts[role];
+
+            // Call OpenAI API
+            fetch('/chatBot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    userMessage: userMessage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessageToChatbox("Bot: " + data.reply, 'bot-message');
+                document.getElementById('message-input').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessageToChatbox("Bot: Sorry, something went wrong. Please try again.", 'bot-message');
+            });
+        }
+
+        function addMessageToChatbox(message, messageType) {
+            const chatbox = document.getElementById('chatbox');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messageElement.classList.add('message', messageType);
+            chatbox.appendChild(messageElement);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+import openai
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -135,6 +136,31 @@ def logout():
     return redirect(url_for('home'))
 
 # Ensure the Flask app runs only when executed directly
+@app.route('/chatbot')
+def chatbot():
+    return render_template('chatbot.html')
+
+openai.api_key = ''
+@app.route('/chatBot', methods=['POST'])
+def chatBot():
+    data = request.get_json()
+    prompt = data['prompt']
+    user_message = data['userMessage']
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"Prompt: {prompt}\n\nUser: {user_message}\n"},
+                {"role": "user", "content": user_message}
+            ],
+            max_tokens=150
+        )
+        return jsonify({'reply': response['choices'][0]['message']['content'].strip()})
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({'error': 'An error occurred while processing your request.'}), 500
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
