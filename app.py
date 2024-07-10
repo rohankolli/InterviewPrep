@@ -101,22 +101,32 @@ def profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('profile.html', user=user)
 
-@app.route('/userprofile/<int:user_id>')
+@app.route('/userprofile/<int:user_id>', methods=['GET', 'POST'])
 def userprofile(user_id):
     user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        user.username = request.form['username']
+        user.email = request.form['email']
+        user.address = request.form['address']
+        user.nickname = request.form['nickname']
+        user.dob = request.form['dob']
+        db.session.commit()
+        flash('Profile updated successfully')
+        return redirect(url_for('userprofile', user_id=user.id))
+
     profile_data = {
         'name': user.username,
-        'title': 'Security Lead',  # Example title
-        'tasks': [
-            'Product Infrastructure',
-            'Network Security',
-            'Security Testing',
-            'Security Audit Outsourcing',
-            'Bugs'
-        ],
-        'profile_image_url': 'https://via.placeholder.com/100'  # Replace with actual image URL
+        'username': user.username,
+        'email': user.email,
+        'address': 'New York, USA',  # Example address
+        'nickname': 'Sky Angel',  # Example nickname
+        'dob': 'April 28, 1981',  # Example DOB
+        'profile_image_url': 'https://via.placeholder.com/150'  # Replace with actual image URL
     }
     return render_template('userprofile.html', profile=profile_data)
+
+
+
 
 @app.route('/delete_post/<int:post_id>')
 def delete_post(post_id):

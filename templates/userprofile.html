@@ -1,22 +1,85 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <h1>User Profile</h1>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ profile.name }}</h5>
-                <p class="card-text">{{ profile.title }}</p>
-                <img src="{{ profile.profile_image_url }}" class="card-img-top" alt="Profile Image">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ profile.profile_image_url }}" class="rounded-circle mb-3" alt="Profile Image" width="150" height="150">
+                    <h3>{{ profile.name }}</h3>
+                    <p class="text-muted">@{{ profile.username }} <a href="#" class="edit-icon" data-target="username"><i class="fas fa-edit"></i></a></p>
+                </div>
+                <form method="post" id="profile-form">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-4"><strong>Username</strong></div>
+                                <div class="col-md-6">
+                                    <span class="profile-field" id="username">{{ profile.username }}</span>
+                                    <input type="text" class="form-control d-none" id="username-input" name="username" value="{{ profile.username }}">
+                                </div>
+                                <div class="col-md-2 text-right"><a href="#" class="edit-icon" data-target="username"><i class="fas fa-edit"></i></a></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-4"><strong>Email</strong></div>
+                                <div class="col-md-6">
+                                    <span class="profile-field" id="email">{{ profile.email }}</span>
+                                    <input type="email" class="form-control d-none" id="email-input" name="email" value="{{ profile.email }}">
+                                </div>
+                                <div class="col-md-2 text-right"><a href="#" class="edit-icon" data-target="email"><i class="fas fa-edit"></i></a></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-4"><strong>Address</strong></div>
+                                <div class="col-md-6">
+                                    <span class="profile-field" id="address">{{ profile.address }}</span>
+                                    <input type="text" class="form-control d-none" id="address-input" name="address" value="{{ profile.address }}">
+                                </div>
+                                <div class="col-md-2 text-right"><a href="#" class="edit-icon" data-target="address"><i class="fas fa-edit"></i></a></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-4"><strong>Nickname</strong></div>
+                                <div class="col-md-6">
+                                    <span class="profile-field" id="nickname">{{ profile.nickname }}</span>
+                                    <input type="text" class="form-control d-none" id="nickname-input" name="nickname" value="{{ profile.nickname }}">
+                                </div>
+                                <div class="col-md-2 text-right"><a href="#" class="edit-icon" data-target="nickname"><i class="fas fa-edit"></i></a></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-4"><strong>DOB</strong></div>
+                                <div class="col-md-6">
+                                    <span class="profile-field" id="dob">{{ profile.dob }}</span>
+                                    <input type="text" class="form-control d-none" id="dob-input" name="dob" value="{{ profile.dob }}">
+                                </div>
+                                <div class="col-md-2 text-right"><a href="#" class="edit-icon" data-target="dob"><i class="fas fa-edit"></i></a></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                </form>
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Tasks:</strong></li>
-                {% for task in profile.tasks %}
-                    <li class="list-group-item">{{ task }}</li>
-                {% endfor %}
-            </ul>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.edit-icon').forEach(function(editIcon) {
+            editIcon.addEventListener('click', function(event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).classList.toggle('d-none');
+                document.getElementById(targetId + '-input').classList.toggle('d-none');
+            });
+        });
+    });
+</script>
 {% endblock %}
