@@ -1,36 +1,69 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <h1>Dashboard</h1>
-        <form method="post">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" class="form-control" name="title" required>
+<div class="container mt-4" style="background-color: #f4f4f4; padding: 20px;">
+    <div class="row">
+        <!-- Sidebar with profile information -->
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="User Profile Picture">
+                    <h5 class="card-title">{{ session['username'] }}</h5>
+                    <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="body">Body</label>
-                <textarea class="form-control" name="body" required></textarea>
+            
+        </div>
+        <!-- Main content area -->
+        <div class="col-md-6" style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Start a post</h5>
+                    <form method="post">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="title" placeholder="Title" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" name="body" rows="3" placeholder="What do you want to talk about?" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="position" placeholder="Position" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post</button>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="position">Position</label>
-                <input type="text" class="form-control" name="position" required>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Filter Posts</h5>
+                    <form method="get" action="{{ url_for('dashboard') }}">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="keyword" placeholder="Enter keyword to filter posts">
+                        </div>
+                        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+                    </form>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Post</button>
-        </form>
-        <h2 class="mt-4">Posts</h2>
-        <ul class="list-group">
+            <h5>Posts</h5>
             {% for post in posts %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a>
-                    {% if session['user_id'] == post.author_id or session.get('is_admin') %}
-                        <a href="{{ url_for('delete_post', post_id=post.id) }}" class="btn btn-danger btn-sm float-right">Delete</a>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.body }}</p>
+                    <!-- Fetch the author object for the post -->
+                    {% set author = post.author %}
+                    <p class="card-text"><small class="text-muted">Posted by {{ session['username'] }} | Position: {{ post.position }}</small></p>
+                    <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-outline-primary btn-sm">Read more</a>
+                    {% if session['user_id'] == post.author_id or session['is_admin'] %}
+                    <a href="{{ url_for('delete_post', post_id=post.id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
                     {% endif %}
-                </li>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
-        <!-- Button to enter the chatbot -->
-        <a href="{{ url_for('chatbot') }}" class="btn btn-secondary mt-4">Enter Chatbot</a>
+        </div>
+        <!-- Right sidebar -->
+        <div class="col-md-3">
+            <!-- Additional content can go here -->
+        </div>
     </div>
 </div>
 {% endblock %}

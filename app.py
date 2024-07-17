@@ -73,7 +73,14 @@ def register():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    posts = Post.query.all()
+    
+    keyword = request.args.get('keyword')
+    
+    if keyword:
+        posts = Post.query.filter(Post.title.contains(keyword) | Post.body.contains(keyword)).all()
+    else:
+        posts = Post.query.all()
+        
     if request.method == 'POST':
         title = request.form.get('title')
         body = request.form.get('body')
@@ -125,9 +132,6 @@ def userprofile(user_id):
     }
     return render_template('userprofile.html', profile=profile_data)
 
-
-
-
 @app.route('/delete_post/<int:post_id>')
 def delete_post(post_id):
     if 'user_id' not in session:
@@ -145,7 +149,6 @@ def logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-# Ensure the Flask app runs only when executed directly
 @app.route('/chatbot')
 def chatbot():
     return render_template('chatbot.html')
