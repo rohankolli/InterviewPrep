@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin: 10px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+}
+
+form {
+  margin: 20px 0;
+}
+
+.chat-box {
+  border: 1px solid #ddd;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+}
+
+.chat-message div {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.chat-message div strong {
+  display: block;
+  margin-bottom: 5px;
+}
