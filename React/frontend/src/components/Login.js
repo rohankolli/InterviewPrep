@@ -25,9 +25,6 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        <div style={styles.iconContainer}>
-          <img src="path-to-icon.png" alt="User Icon" style={styles.icon} />
-        </div>
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputContainer}>
             <label style={styles.label}>Username:</label>
@@ -49,13 +46,6 @@ const Login = () => {
               style={styles.input}
             />
           </div>
-          <div style={styles.rememberContainer}>
-            <label>
-              <input type="checkbox" />
-              Remember me
-            </label>
-            <a href="#" style={styles.forgotPassword}>Forgot Password?</a>
-          </div>
           <button type="submit" style={styles.button}>Login</button>
         </form>
       </div>
@@ -69,22 +59,15 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    background: 'linear-gradient(to right, #87CEFA, #00BFFF)', // Blue gradient background
+    backgroundColor: '#000', // Black background
+    color: '#fff', // White text
   },
   loginBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Slightly transparent white background
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slightly transparent dark background
     padding: '40px',
     borderRadius: '10px',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 0 10px rgba(255, 255, 255, 0.1)',
     textAlign: 'center',
-  },
-  iconContainer: {
-    marginBottom: '20px',
-  },
-  icon: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
   },
   form: {
     display: 'flex',
@@ -97,29 +80,22 @@ const styles = {
     display: 'block',
     marginBottom: '5px',
     textAlign: 'left',
+    color: '#fff', // White text
   },
   input: {
     width: '100%',
     padding: '10px',
     borderRadius: '5px',
     border: '1px solid #ccc',
-  },
-  rememberContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  forgotPassword: {
-    textDecoration: 'none',
-    color: '#00BFFF',
+    backgroundColor: '#333', // Dark input background
+    color: '#fff', // White text
   },
   button: {
     padding: '10px 20px',
     borderRadius: '5px',
     border: 'none',
-    backgroundColor: '#00BFFF',
-    color: '#fff',
+    backgroundColor: '#1da1f2', // Blue button background
+    color: '#fff', // White text
     cursor: 'pointer',
     fontSize: '16px',
   },

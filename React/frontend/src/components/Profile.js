@@ -1,7 +1,8 @@
+// Profile.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-const UserProfile = () => {
+const Profile = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,12 +14,12 @@ const UserProfile = () => {
         if (response.ok) {
           const data = await response.json();
           setUserData(data);
+          setLoading(false);
         } else {
           throw new Error('Failed to fetch user profile');
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
-      } finally {
         setLoading(false);
       }
     };
@@ -74,4 +75,4 @@ const styles = {
   },
 };
 
-export default UserProfile;
+export default Profile;

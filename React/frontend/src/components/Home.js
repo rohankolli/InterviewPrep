@@ -1,12 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './Home.css';  // Create a CSS file for styling
 
 const Home = () => (
-  <div>
-    <h1>Welcome to InterviewPrep</h1>
-    <nav>
-      <Link to="/login">Login</Link> | <Link to="/register">Register</Link> | <Link to="/dashboard">Dashboard</Link> | <Link to="/chatbot">Chatbot</Link>
-    </nav>
+  <div className="home-container">
+    <div className="header">
+      <h1>InterviewPrep</h1>
+      <h2>Find partners to prepare for your interviews.</h2>
+    </div>
+    <div className="buttons">
+      <Link to="/register">
+        <button className="register-button">Create account</button>
+      </Link>
+      <Link to="/login">
+        <button className="login-button">Login</button>
+      </Link>
+    </div>
   </div>
 );
 
