@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, request, jsonify
+# Existing imports and configurations
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import openai
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -37,8 +38,14 @@ def login():
     password = data['password']
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password, password):
+        session['user_id'] = user.id
         return jsonify({'success': True, 'user': {'id': user.id, 'username': user.username}})
     return jsonify({'success': False})
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return jsonify({'success': True})
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -46,12 +53,12 @@ def register():
     username = data['username']
     password = data['password']
     email = data['email']
-    
+
     if User.query.filter_by(username=username).first():
         return jsonify({'success': False, 'message': 'Username already exists'})
     if User.query.filter_by(email=email).first():
         return jsonify({'success': False, 'message': 'Email already registered'})
-    
+
     hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = User(username=username, password=hashed_password, email=email)
     db.session.add(new_user)
@@ -60,6 +67,8 @@ def register():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
     if request.method == 'GET':
         keyword = request.args.get('keyword')
         if keyword:
@@ -72,37 +81,45 @@ def dashboard():
         title = data['title']
         body = data['body']
         position = data['position']
-        new_post = Post(title=title, body=body, author_id=1, position=position)  # Replace author_id with actual user ID
+        new_post = Post(title=title, body=body, author_id=session['user_id'], position=position)  # Use session user_id
         db.session.add(new_post)
         db.session.commit()
         return jsonify({'success': True})
 
-@app.route('/profile/<int:user_id>', methods=['GET', 'POST'])
-def profile(user_id):
-    if request.method == 'GET':
-        user = User.query.get(user_id)
-        if user:
-            return jsonify({
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'address': 'New York, USA',  # Replace with actual data
-                'nickname': 'Sky Angel',  # Replace with actual data
-                'dob': 'April 28, 1981'  # Replace with actual data
-            })
-        return jsonify({'error': 'User not found'}), 404
-    elif request.method == 'POST':
-        data = request.json
-        user = User.query.get(user_id)
-        if user:
-            user.username = data.get('username', user.username)
-            user.email = data.get('email', user.email)
-            db.session.commit()
-            return jsonify({'success': True})
-        return jsonify({'error': 'User not found'}), 404
+@app.route('/dashboard', methods=['POST'])
+def dashboard_post():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+    data = request.json
+    title = data['title']
+    body = data['body']
+    position = data['position']
+    new_post = Post(title=title, body=body, author_id=session['user_id'], position=position)
+    db.session.add(new_post)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/profile', methods=['GET'])
+def profile():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 403
+    user = User.query.get(session['user_id'])
+    if user:
+        return jsonify({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            # Add other profile details if needed
+        })
+    return jsonify({'error': 'User not found'}), 404
+
+
+openai.api_key = ''
 
 @app.route('/chatBot', methods=['POST'])
 def chatBot():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
     data = request.json
     prompt = data.get('prompt', 'Interview practice')
     user_message = data['userMessage']

@@ -7,12 +7,12 @@ const Dashboard = () => {
   const [body, setBody] = useState('');
   const [position, setPosition] = useState('');
   const [username, setUsername] = useState('');
-  const [userId, setUserId] = useState(null); // Add state for userId
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/dashboard');
+      const response = await fetch('http://localhost:5000/dashboard', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setPosts(data.posts);
@@ -26,11 +26,11 @@ const Dashboard = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/profile/1'); // Adjust the endpoint as needed
+      const response = await fetch('http://localhost:5000/profile', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setUsername(data.username);
-        setUserId(data.id); // Set the userId from fetched data
+        setUserId(data.id);
       } else {
         throw new Error('Failed to fetch user profile');
       }
@@ -38,6 +38,7 @@ const Dashboard = () => {
       console.error('Error fetching user profile:', error);
     }
   };
+  
 
   useEffect(() => {
     fetchPosts();
@@ -46,19 +47,20 @@ const Dashboard = () => {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('http://localhost:5000/dashboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, body, position }),
+        credentials: 'include',
       });
-
+  
       if (response.ok) {
         setTitle('');
         setBody('');
         setPosition('');
-        fetchPosts();
+        fetchPosts();  // Refresh posts after successful submission
       } else {
         throw new Error('Failed to post');
       }
@@ -67,30 +69,71 @@ const Dashboard = () => {
       alert('Post failed');
     }
   };
+  
+
+  const handleDeletePost = async (postId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/dashboard/${postId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        fetchPosts();
+      } else {
+        throw new Error('Failed to delete post');
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Delete failed');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        throw new Error('Failed to log out');
+      }
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   return (
-    <div className="container mt-4" style={styles.container}>
+    <div className="container-fluid mt-4" style={styles.container}>
       <div className="row">
         <div className="col-md-3">
           <div className="card mb-3" style={styles.card}>
-            <div className="card-body text-center">
-              <img
-                src="https://via.placeholder.com/150"
-                className="rounded-circle mb-3"
-                alt="User Profile Picture"
-              />
-              <h5 className="card-title" style={styles.cardTitle}>
-                {username}
-              </h5>
-              <Link to={`/profile/${userId}`} className="btn btn-outline-primary btn-sm">
-                View Profile
-              </Link>
-              <br />
-              <br />
-              <Link to="/chatbot" className="btn btn-primary btn-sm">
-                Chatbot
-              </Link>
-            </div>
+          <div className="card-body text-center">
+            <img
+              src="https://via.placeholder.com/150"
+              className="rounded-circle mb-3"
+              alt="User Profile Picture"
+            />
+            <h5 className="card-title" style={styles.cardTitle}>
+              {username}  {/* Display current user's username */}
+            </h5>
+            <Link to={`/profile/${userId}`} className="btn btn-outline-primary btn-sm">
+              View Profile
+            </Link>
+            <br />
+            <br />
+            <Link to="/chatbot" className="btn btn-primary btn-sm">
+              Chatbot
+            </Link>
+            <br />
+            <br />
+            <Link to="/" onClick={handleLogout} className="btn btn-danger btn-sm">
+              Logout
+            </Link>
+          </div>
+
           </div>
         </div>
         <div className="col-md-6">
@@ -149,6 +192,9 @@ const Dashboard = () => {
                   <p className="card-text" style={styles.cardText}>
                     <small className="text-muted" style={styles.cardText}>Position: {post.position}</small>
                   </p>
+                  <button onClick={() => handleDeletePost(post.id)} className="btn btn-danger btn-sm">
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
@@ -166,6 +212,8 @@ const styles = {
   container: {
     backgroundColor: '#121212',
     color: '#fff',
+    paddingLeft: '0',
+    paddingRight: '0',
   },
   card: {
     backgroundColor: '#1e1e1e',
