@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+import os
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import openai
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -68,15 +69,58 @@ def dashboard():
         return jsonify({'posts': [{'id': p.id, 'title': p.title, 'body': p.body, 'position': p.position} for p in posts]})
     elif request.method == 'POST':
         data = request.json
-        new_post = Post(title=data['title'], body=data['body'], position=data['position'], author_id=1)  # Adjust author_id as needed
+        title = data['title']
+        body = data['body']
+        position = data['position']
+        new_post = Post(title=title, body=body, author_id=1, position=position)  # Replace author_id with actual user ID
         db.session.add(new_post)
         db.session.commit()
         return jsonify({'success': True})
 
-@app.route('/profile/<int:user_id>', methods=['GET'])
+@app.route('/profile/<int:user_id>', methods=['GET', 'POST'])
 def profile(user_id):
-    user = User.query.get_or_404(user_id)
-    return jsonify({'username': user.username, 'email': user.email, 'id': user.id})
+    if request.method == 'GET':
+        user = User.query.get(user_id)
+        if user:
+            return jsonify({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'address': 'New York, USA',  # Replace with actual data
+                'nickname': 'Sky Angel',  # Replace with actual data
+                'dob': 'April 28, 1981'  # Replace with actual data
+            })
+        return jsonify({'error': 'User not found'}), 404
+    elif request.method == 'POST':
+        data = request.json
+        user = User.query.get(user_id)
+        if user:
+            user.username = data.get('username', user.username)
+            user.email = data.get('email', user.email)
+            db.session.commit()
+            return jsonify({'success': True})
+        return jsonify({'error': 'User not found'}), 404
+
+@app.route('/chatBot', methods=['POST'])
+def chatBot():
+    data = request.json
+    prompt = data.get('prompt', 'Interview practice')
+    user_message = data['userMessage']
+
+    # Call OpenAI API here
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"Prompt: {prompt}\n\nUser: {user_message}\n"},
+                {"role": "user", "content": user_message}
+            ],
+            max_tokens=150
+        )
+        return jsonify({'reply': response['choices'][0]['message']['content'].strip()})
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({'error': 'An error occurred while processing your request.'}), 500
 
 if __name__ == '__main__':
     with app.app_context():
