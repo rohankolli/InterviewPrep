@@ -8,10 +8,12 @@
                 <div class="card-body text-center">
                     <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="User Profile Picture">
                     <h5 class="card-title">{{ session['username'] }}</h5>
-                    <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                    <!-- View Profile Button -->
+                    <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-outline-primary btn-sm mb-2">View Profile</a>
+                    <!-- Messages Button -->
+                    <a href="{{ url_for('messages') }}" class="btn btn-outline-secondary btn-sm">Messages</a>
                 </div>
             </div>
-            
         </div>
         <!-- Main content area -->
         <div class="col-md-6" style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
@@ -49,8 +51,6 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ post.title }}</h5>
                     <p class="card-text">{{ post.body }}</p>
-                    <!-- Fetch the author object for the post -->
-                    {% set author = post.author %}
                     <p class="card-text"><small class="text-muted">Posted by {{ session['username'] }} | Position: {{ post.position }}</small></p>
                     <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-outline-primary btn-sm">Read more</a>
                     {% if session['user_id'] == post.author_id or session['is_admin'] %}

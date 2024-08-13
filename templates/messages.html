@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4" style="background-color: #f4f4f4; padding: 20px;">
+    <div class="row">
+        <!-- Sidebar with profile information -->
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="User Profile Picture">
+                    <h5 class="card-title">{{ session['username'] }}</h5>
+                    <a href="{{ url_for('profile', user_id=session['user_id']) }}" class="btn btn-outline-primary btn-sm mb-3">View Profile</a>
+                    <a href="{{ url_for('messages') }}" class="btn btn-outline-primary btn-sm mb-3">Messages</a>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="form-group mb-3">
+                <input type="text" class="form-control" id="searchUser" placeholder="Search users..." onkeyup="searchUsers()">
+            </div>
+
+            <!-- User List -->
+            <ul class="list-group" id="userList">
+                {% for user in users %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('messages', user_id=user.id) }}">{{ user.username }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Main content area -->
+        <div class="col-md-9" style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+            <!-- Conversation Area -->
+            {% if selected_user %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Conversation with {{ selected_user.username }}</h5>
+                    <div id="conversation" style="height: 300px; overflow-y: scroll;">
+                        {% for message in messages %}
+                        <div class="{% if message.sender_id == session['user_id'] %}text-right{% else %}text-left{% endif %} mb-2">
+                            <p class="mb-1"><strong>{{ message.sender.username }}</strong></p>
+                            <p class="bg-light p-2 rounded">{{ message.content }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p>Select a user to start a conversation.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function searchUsers() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById('searchUser');
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("userList");
+    li = ul.getElementsByTagName('li');
+
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+{% endblock %}

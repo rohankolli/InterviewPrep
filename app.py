@@ -2,6 +2,7 @@ import openai
 from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -21,6 +22,17 @@ class Post(db.Model):
     body = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     position = db.Column(db.String(150), nullable=False)
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_messages')
+
 
 @app.route('/')
 def home():
@@ -106,7 +118,7 @@ def post(post_id):
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template('profile.html', user=user)
+    return redirect(url_for('userprofile', user_id=user.id))
 
 @app.route('/userprofile/<int:user_id>', methods=['GET', 'POST'])
 def userprofile(user_id):
@@ -125,9 +137,6 @@ def userprofile(user_id):
         'name': user.username,
         'username': user.username,
         'email': user.email,
-        'address': 'New York, USA',  # Example address
-        'nickname': 'Sky Angel',  # Example nickname
-        'dob': 'April 28, 1981',  # Example DOB
         'profile_image_url': 'https://via.placeholder.com/150'  # Replace with actual image URL
     }
     return render_template('userprofile.html', profile=profile_data)
@@ -173,6 +182,28 @@ def chatBot():
     except Exception as e:
         print(f"An error occurred: {e}")
         return jsonify({'error': 'An error occurred while processing your request.'}), 500
+
+@app.route('/messages', methods=['GET', 'POST'])
+def messages():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    selected_user_id = request.args.get('user_id')
+    users = User.query.all()
+    selected_user = None
+    messages = []
+
+    if selected_user_id:
+        selected_user = User.query.get(selected_user_id)
+        if selected_user:
+            # Fetch messages between the logged-in user and the selected user
+            messages = Message.query.filter(
+                (Message.sender_id == session['user_id']) & (Message.receiver_id == selected_user.id) |
+                (Message.sender_id == selected_user.id) & (Message.receiver_id == session['user_id'])
+            ).order_by(Message.timestamp.asc()).all()
+
+    return render_template('messages.html', users=users, selected_user=selected_user, messages=messages)
+
 
 if __name__ == '__main__':
     with app.app_context():

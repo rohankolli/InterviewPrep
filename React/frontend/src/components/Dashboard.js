@@ -110,30 +110,24 @@ const Dashboard = () => {
       <div className="row">
         <div className="col-md-3">
           <div className="card mb-3" style={styles.card}>
-          <div className="card-body text-center">
-            <img
-              src="https://via.placeholder.com/150"
-              className="rounded-circle mb-3"
-              alt="User Profile Picture"
-            />
-            <h5 className="card-title" style={styles.cardTitle}>
-              {username}  {/* Display current user's username */}
-            </h5>
-            <Link to={`/profile/${userId}`} className="btn btn-outline-primary btn-sm">
-              View Profile
-            </Link>
-            <br />
-            <br />
-            <Link to="/chatbot" className="btn btn-primary btn-sm">
-              Chatbot
-            </Link>
-            <br />
-            <br />
-            <Link to="/" onClick={handleLogout} className="btn btn-danger btn-sm">
-              Logout
-            </Link>
-          </div>
-
+            <div className="card-body text-center">
+              <img
+                src="https://via.placeholder.com/150"
+                className="rounded-circle mb-3"
+                alt="User Profile Picture"
+              />
+              <h5 className="card-title" style={styles.cardTitle}>
+                {username}
+              </h5>
+              <Link to={`/profile/${userId}`} className="btn btn-outline-primary btn-sm">
+                View Profile
+              </Link>
+              <br />
+              <br />
+              <Link to="/chatbot" className="btn btn-primary btn-sm">
+                Chatbot
+              </Link>
+            </div>
           </div>
         </div>
         <div className="col-md-6">

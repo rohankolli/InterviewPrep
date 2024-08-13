@@ -6,7 +6,7 @@ import openai
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder='../frontend/build', template_folder='../frontend/build')
+app = Flask(__name__, static_folder='../frontend/build/static', template_folder='../frontend/build')
 CORS(app)
 
 app.config['SECRET_KEY'] = 'your_secret_key'
