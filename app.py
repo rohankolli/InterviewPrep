@@ -126,9 +126,7 @@ def userprofile(user_id):
     if request.method == 'POST':
         user.username = request.form['username']
         user.email = request.form['email']
-        user.address = request.form['address']
-        user.nickname = request.form['nickname']
-        user.dob = request.form['dob']
+        
         db.session.commit()
         flash('Profile updated successfully')
         return redirect(url_for('userprofile', user_id=user.id))
