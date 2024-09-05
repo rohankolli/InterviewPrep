@@ -4,17 +4,24 @@ InterviewPrep is a web application designed to help students connect with others
 
 **Features**
 User Registration and Login: Seamless signup and login process for users to access all platform features.
+
 Dashboard: A personalized home screen displaying posts from other users, filterable by job position (e.g., Software Engineer, Consulting, Investment Banking).
+
 Post Creation: Users can create and share posts containing their interview experiences, tips, and useful resources.
+
 User Profiles: Posts are clickable, enabling users to view the profile of the post's author, including their username and contact details.
+
 Post Management: Users can manage their own posts, and admins have the ability to moderate and delete any post.
+
 Logout: Secure user logout functionality to protect account information.
 
 **Upcoming Features**
 We're excited to be working on several new features to further enhance the InterviewPrep experience:
 
 Messaging: Direct messaging to allow users to communicate and collaborate more effectively.
+
 Job Postings: A section dedicated to displaying the latest internship and full-time job opportunities.
+
 Improved Post Filtering: Enhanced filtering options for posts based on job type, location, and company.
 
 Demo
