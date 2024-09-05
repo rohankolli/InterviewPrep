@@ -24,5 +24,6 @@ Job Postings: A section dedicated to displaying the latest internship and full-t
 
 Improved Post Filtering: Enhanced filtering options for posts based on job type, location, and company.
 
-Demo
+**Demo**
+
 Check out a demo of InterviewPrep in action by watching the video here: https://youtu.be/cQSSdD5KXUo
